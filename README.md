@@ -45,7 +45,7 @@ The methods interact with the object and yield the following results:
 
 For phonetic pangrams, currently the code can only check against English phonemes. Including text in another language, or even English words not found in the [phones dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict), will most likely make the results go awry.
 
-For graphemic pangrams, this code does not make assumptions about the alphabetic nature of a writing system. You could pass it every 教育漢字 Kyōiku Kanji, then test whether a (presumably very long) Japanese sentence is a pangram, or how close it is to pangram status.
+For graphemic pangrams, this code does not make assumptions about the alphabetic nature of a writing system. You could pass it every [教育漢字](http://www.mext.go.jp/a_menu/shotou/new-cs/youryou/syo/koku/001.htm) Kyōiku Kanji, then test whether a (presumably very long) Japanese sentence is a pangram, or how close it is to pangram status.
 
 ## Contributing
 
