@@ -23,13 +23,16 @@ You will be able to get it running simply by copying the files and executing the
 - run the main `project.py` file with Python
 	- try `python3 project.py` or `python project.py`
 
+If you want to start interacting with Pangrammatron directly, edit the main execution in `project.py` and try calling one of its methods.
+
 ## Source code
 
-The current iteration of the project initializes an object that stores an alphabet and a phones dictionary. It then expects a user to call one of its methods, passing it a sentence written in that alphabet.
+The current iteration of the project initializes an object that stores an alphabet, a phones dictionary and a phones inventory based on the passed-in language code (default `"en"`). It then expects a user to call one of its methods, passing it a sentence written in that alphabet to test for pangrams or a text sample containing words searchable in the phones dictionary to test for panphones. The phones dictionary does not check for consistency with the alphabet, so it could contain very different characters. In practice, the project uses an all caps English lexicon for phones, but a custom alphabet for graphemes.
 
 ### Interactions
 
 The methods interact with the object and yield the following results:
+
 - when asked if a sentence is a pangram
 	- answer `True` if every letter in the alphabet is in the sentence
 	- answer `False` otherwise

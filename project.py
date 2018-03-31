@@ -1,7 +1,7 @@
 import re
 import os
 
-## initialize an object to store an alphabet and a phones dictionary
+## pangram checker
 class Pangrammatron:
 	files = {
 		'en': {
@@ -13,24 +13,23 @@ class Pangrammatron:
 	memo_letters = {}
 
 	def __init__ (self, alphabet, language='en'):
-		# TODO check and clean alphabet before storing
-			# if alphabet is string of characters, split into array
-			# take array and check each character (min: is defined, is a string, is not empty)
+		# TODO check and clean alphabet before storing (min: is defined, is a string, is not empty)
 		try:
 			self.alphabet = set(list(alphabet));
 		except:
 			raise TypeError("Cannot convert Pangrammatron alphabet into a set - try passing a string or list")
 
-		# TODO load phones dict from path
+		# raw text lexicon mapping word entries to their phonetic transcriptions
 		self.phones_lexicon = os.path.join(os.getcwd(), self.files[language]['lex'])
 
-		# TODO load phones list from path
+		# raw text list of phones
 		self.phones_inventory = self.get_phones(os.path.join(os.getcwd(), self.files[language]['phones']))
 
 		# TODO handle other languages and other dictionaries based on language
 		self.language = language
 
 	def get_phones (self, file):
+		"""Parse and list all phones from the raw phones list"""
 		phones = set([])
 		with open(file, "r") as f:
 			for l in f:
@@ -42,16 +41,19 @@ class Pangrammatron:
 		return phones
 
 	def update_alphabet (self, alphabet):
+		"""Set a new alphabet"""
 		self.alphabet = alphabet
 		return self.alphabet
 
 	def break_into_words (self, text):
+		"""Split a text into words representing contiguous strings of characters in the stored alphabet"""
 		regex = r'[^%s]+' % "".join(self.alphabet)
 		words = re.compile(regex).split(text.upper())
 		return words
 
 	def unique_letters (self, words):
-		# TODO split on self.alphabet's characters instead of fixed a-z
+		"""Find every unique letter that occurs in a list of words"""
+
 		letters = "".join(words)
 
 		# use hash set to check for uniques
@@ -63,6 +65,7 @@ class Pangrammatron:
 		return found_unique_letters
 
 	def unique_phones (self, words):
+		"""Find every unique phone that occurs in each transcribed word from a list of written words"""
 		found_unique_phones = set([])
 		words = set(words)
 		if '' in words: words.remove('')
@@ -74,7 +77,8 @@ class Pangrammatron:
 					l_word = l_elems[0]
 					l_phones = l_elems[1:]
 				except:
-					continue 	# line is not a formatted lexicon entry
+					# line is not a formatted lexicon entry
+					continue
 				if l_word in words:
 					# strip numbers from end of some phones
 					for phone in l_phones:
@@ -83,15 +87,10 @@ class Pangrammatron:
 
 		return found_unique_phones
 
-	def how_pangrammatic (self, sentence):
-		# TODO when asked how much of a pangram a sentence is
-			# answer with the ratio of letters found to total letters in the alphabet
+	def how_pangrammatic (self, text):
+		"""Calculate the ratio of letters in the text to total letters in the stored alphabet"""
 
-		# TODO consider doing main work here and calling from is_pangram
-			# is_pangram will return True if ratio is 100%
-			# memoize answer per sentence
-
-		words = self.break_into_words (sentence)
+		words = self.break_into_words (text)
 
 		# memoized answer
 		if "".join(words) in self.memo_letters:
@@ -105,15 +104,10 @@ class Pangrammatron:
 
 		return (ratio['sample'] / ratio['total'])
 
-	def how_panphonic (self, sentence):
-		# TODO when asked how much of a panphone a sentence is
-			# answer with the ratio of phones found to total phones in the language
+	def how_panphonic (self, text):
+		"""Calculate the ratio of phones in the text to total phones in the stored inventory"""
 
-		# TODO consider doing main work here and calling from is_panphone
-			# is_panphone will return True if ratio is 100%
-			# memoize answer per sentence
-
-		words = self.break_into_words (sentence)
+		words = self.break_into_words (text)
 
 		# memoized answer
 		if "".join(words) in self.memo_phones:
@@ -128,41 +122,34 @@ class Pangrammatron:
 		return (ratio['sample'] / ratio['total'])
 
 	def is_pangram (self, text):
-		# TODO when asked if a sentence is a pangram
-			# uncaps sentence - actually check if upper or lower match alphabet since alphabet can have either
-			# use regex to break sentence into words
-			# answer True if every letter in self.alphabet is in the sentence
-			# answer False otherwise
-
-		# TODO memoize answer
-
-		# whether every letter was found in text
+		"""Determine whether a text sample contains all the letters in the stored alphabet"""
 		ratio = self.how_pangrammatic(text)
-
+		# whether every letter was found in text
 		if ratio >= 1.0: return True
 		return False
 
 	def is_panphone (self, text):
-		# TODO when asked if a sentence is a panphone
-			# caps sentence (for CMU dict)
-			# use regex to break sentence into words
-			# break words into phonemes
-			# iterate through phonemes
-			# answer True if every phone in self.phones_dict is in the sentence
-			# answer False otherwise
-		# TODO if answer is memoized and is 100%, return True
-
+		"""Determine whether a text sample contains all the phones in the stored inventory"""
 		ratio = self.how_panphonic(text)
-				
-		# whether every letter was found in text
+		# whether every phone was found in transcribed text
 		if ratio >= 1.0: return True
 		return False
 
+def run_text_ui(pan):
+	"""Wrap Pangrammatron interactions for raw input"""
+	try:
+		pan.alphabet
+	except:
+		return None
+	txt = input("\nType a sentence to check:\n")
+	print("\nYour example %s a pangram." % ("is" if pan.is_pangram(txt) else "is not"))
+	print("It contains %s%% of the letters in the alphabet." % round(pan.how_pangrammatic(txt)*100))
+	print("\nYour example %s a panphone." % ("is" if pan.is_panphone(txt) else "is not"))
+	print("It contains %s%% of the phones in the inventory." % round(pan.how_panphonic(txt)*100))
+	if (txt.upper() not in ["Q", "^C", "Q", "", "\n", "QUIT"]):
+		run_text_ui(pan)
+	return None
+
 if __name__ == '__main__':
 	pan = Pangrammatron("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	print(pan.is_pangram("The quick brown fox jumped over the lazy dog."))
-	print(pan.how_pangrammatic("The quick brown fox jumped over the lazy dog."))
-	print(pan.is_pangram("The quick brown fox jumped over the lazy dogs."))
-	print(pan.how_pangrammatic("The quick brown fox jumped over the lazy dogs."))
-	print(pan.is_panphone("The quick brown fox jumped over the lazy dog."))
-	print(pan.how_panphonic("The quick brown fox jumped over the lazy dog."))
+	run_text_ui(pan)
