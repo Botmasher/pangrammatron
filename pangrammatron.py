@@ -23,13 +23,14 @@ class Pangrammatron:
 		self.phones_lexicon = os.path.join(os.getcwd(), self.files[language]['lex'])
 
 		# raw text list of phones
-		self.phones_inventory = self.get_phones(os.path.join(os.getcwd(), self.files[language]['phones']))
+		self.phones_inventory = self.gather_phones(language)
 
 		# TODO handle other languages and other dictionaries based on language
 		self.language = language
 
-	def get_phones (self, file):
-		"""Parse and list all phones from the raw phones list"""
+	def gather_phones (self, language):
+		"""Parse and list all phones from a raw phones list"""
+		file = os.path.join(os.getcwd(), self.files[language]['phones'])
 		phones = set([])
 		with open(file, "r") as f:
 			for l in f:
@@ -44,6 +45,12 @@ class Pangrammatron:
 		"""Set a new alphabet"""
 		self.alphabet = alphabet
 		return self.alphabet
+
+	def update_language (self, language):
+		"""Set a new ISO 639-1 code representing a language"""
+		#if (len(language) != 2): return Exception("Invalid ISO 639-1 language code!")
+		self.language = language
+		return self.language
 
 	def break_into_words (self, text):
 		"""Split a text into words representing contiguous strings of characters in the stored alphabet"""
