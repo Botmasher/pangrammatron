@@ -4,7 +4,7 @@ Test if a sentence is a written or spoken pangram... and just how much of a pang
 
 ## What's a pangram?
 
-When written sentence contains every letter of an alphabet, it's a **pangram**. For this project, I'm trying to identify two types of pangrams:
+When a written sentence contains every letter of an alphabet, it's a **pangram**. For this project, I'm trying to identify two types of pangrams:
 1. **graphemic pangram**: a sentence with at least one instance of every letter in a written language
 2. **phonemic pangram**: a sentence with at least one instance of every phoneme used in a spoken language
 
