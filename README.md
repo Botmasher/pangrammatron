@@ -38,6 +38,7 @@ Here are some other ways to make use of Pangrammatron:
 	- call one or more methods
 - Include Pangrammatron in your web project
 	- JavaScript support is on the roadmap
+	- the latest sketch of that code lives in `./js`
 
 ## Source code
 
@@ -50,7 +51,7 @@ The current iteration of the project initializes an object that stores an alphab
 The `__init__` method is for building a Pangrammatron instance.
 
 ```Python
-Pangrammatron(alphabet, language='en')
+Pangrammatron (alphabet, language='en')
 ```
 - Instantiate Pangrammatron with an alphabet and a language
 	- `alphabet`: a string or list of discrete letters to store as an alphabetic set
@@ -63,7 +64,7 @@ Pangrammatron(alphabet, language='en')
 The main methods allow Pangrammatron to evaluate passed-in data and yield the following results.
 
 ```Python
-Pangrammatron.is_pangram(text)
+Pangrammatron.is_pangram (text)
 ```
 - Ask if a sample of text is a pangram
 - Returns:
@@ -71,14 +72,14 @@ Pangrammatron.is_pangram(text)
 	- `False` otherwise
 
 ```Python
-Pangrammatron.how_pangrammatic(text)
+Pangrammatron.how_pangrammatic (text)
 ```
 - Ask how much of a pangram a sample of text is
 - Returns:
 	- the ratio of letters found to total letters in the alphabet
 
 ```Python
-Pangrammatron.is_panphone(text)
+Pangrammatron.is_panphone (text)
 ```
 - Ask if a sample of text is a panphone
 - Returns:
@@ -86,7 +87,7 @@ Pangrammatron.is_panphone(text)
 	- `False` otherwise
 
 ```Python
-Pangrammatron.how_panphonic(text)
+Pangrammatron.how_panphonic (text)
 ```
 - Ask how much of a panphone a sample of text is
 - Returns:
@@ -97,20 +98,20 @@ Pangrammatron.how_panphonic(text)
 These methods are helpful for understanding or changing a Pangrammatron instance's references, particularly the stored data it uses to make calculations.
 
 ```Python
-Pangrammatron.update_alphabet(alphabet)
+Pangrammatron.update_alphabet (alphabet)
 ```
 - Change the alphabet that Pangrammatron uses to determine pangrams
 	- `alphabet`: a string or list of discrete letters to store as an alphabetic set
 	- Pangrammatron's loose definition of "alphabet" allows a variety of even nonalphabetic characters
 
 ```Python
-Pangrammatron.update_language(language)
+Pangrammatron.update_language (language)
 ```
 - Change the language that Pangrammatron uses to determine panphones
 	- `language`: a string representing the ISO 639-1 code of a language
 
 ```Python
-Pangrammatron.gather_phones(language)
+Pangrammatron.gather_phones (language)
 ```
 - Gather a list of all phones in a language
 	- `language`: a string representing the ISO 639-1 code of a language
@@ -122,14 +123,14 @@ Pangrammatron.gather_phones(language)
 These methods are used by Pangrammatron's response methods when parsing text data. 
 
 ```Python
-Pangrammatron.unique_letters(words)
+Pangrammatron.unique_letters (words)
 ```
 - Find every unique letter in a list of words
 	- `words` are expected to be passed in as a list (array)
 	- letters must match those stored in Pangrammatron's current `alphabet`
 
 ```Python
-Pangrammatron.unique_phones(words)
+Pangrammatron.unique_phones (words)
 ```
 - Find every unique phone in a list of words
 	- `words` are expected to be passed in as a list (array)
