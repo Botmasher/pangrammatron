@@ -1,0 +1,14 @@
+# mac
+.DS_Store
+
+# windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# python
+__pycache__/
+*.py[cod]
+
+# js
+/node_modules
