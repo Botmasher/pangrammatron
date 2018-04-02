@@ -12,7 +12,7 @@ I'll also refer to #2 with the term "panphone", since it focuses on all _phones_
 
 ## Why build this?
 
-I'm going through some coursework on natural language processing. One of the quizzes just asked me to identify which in a list of sentences were phonetic versus graphemic pangrams. Rather than use intuition or laboriously compute them myself, I decided to build a project that will help solve the problem for me and maybe someone else down the road.
+I'm going through some coursework on natural language processing. One of the quizzes just asked me to identify which in a list of sentences were phonetic versus graphemic pangrams. Rather than use intuition or compute them by hand, I decided to build a project that solves the problem for me and maybe someone else down the road.
 
 ## Getting Started
 
@@ -21,8 +21,9 @@ You will be able to get it running simply by copying the files and executing the
 - download, fork or clone this repository
 - navigate to the local project directory
 - run the main `project.py` file with Python
-	- try `python3 project.py` or `python project.py`
+	- try `python3 project.py`
 	- the project will run my simple text UI
+	- the project crashes at `input` in earlier versions of Python
 	- type a sentence or select `q` to quit at the prompt
 	- press enter/return and see your results
 
