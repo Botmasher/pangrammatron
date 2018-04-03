@@ -30,16 +30,18 @@ class Pangrammatron {
 	}
 	
 	gatherPhones(cb) {
-		fs.readFile(`../${this.files.en.phon}`,
-			(error, data) => {
-				const inventory = new Set();
-				for (let line of data.toString('utf-8').match(/[^\n]+/g)) {
-					inventory.add(line.split('\t')[0]);
+		return new Promise((resolve, reject) => {
+			fs.readFile(`../${this.files.en.phon}`,
+				(error, data) => {
+					const inventory = new Set();
+					for (let line of data.toString('utf-8').match(/[^\n]+/g)) {
+						inventory.add(line.split('\t')[0]);
+					}
+					this.inventory = inventory;
+					resolve(this.inventory);
 				}
-				this.inventory = inventory;
-				cb();
-			}
-		);
+			);
+		});
 	}
 	
 	setAlphabet(alphabet) {
@@ -102,7 +104,6 @@ class Pangrammatron {
 	isPanphone(text) {
 		return false;
 	}
-
 }
 
 pan = new Pangrammatron();
@@ -111,7 +112,7 @@ const sent1 = "The quick brown fox jumped over the lazy dogs.";
 pan.setAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
 console.log(pan.isPangram(sent0));
 console.log(pan.isPangram(sent1));
-pan.gatherPhones(() => {
+pan.gatherPhones().then(() => {
 	console.log(pan.isPanphone(sent0));
 	console.log(pan.isPanphone(sent1));
 });
