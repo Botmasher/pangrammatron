@@ -56,6 +56,22 @@ class Pangrammatron {
 		return this.inventory;
 	}
 
+	getAlphabet() {
+		return this.alphabet;
+	}
+
+	getInventory() {
+		return this.inventory;
+	}
+
+	countAlphabet() {
+		return this.alphabet.size;
+	}
+
+	countInventory() {
+		return this.inventory.size;
+	}
+
 	setInventory(inventory) {
 		this.inventory = new Set();
 		for (let i=0; i < inventory.length; i++) {
@@ -83,11 +99,19 @@ class Pangrammatron {
 		return foundLetters;
 	}
 
+	// TODO revisit once phones inventory and lexicon parser-builder is in place
 	uniquePhones(words) {
-		return null;
+		const phones = new Set();
+		// for (let word of words) {
+		// 	this.phonesLex.word && this.phonesLex.word.length > 0 && this.phonesLex.word.map(phone => phones.add(phone));
+		// 	}
+		// }
+		return phones;
 	}
 
 	howPangrammatic(text) {
+		if (!this.alphabet) throw "No alphabet defined before calling Pangrammatron.howPangrammatic"
+
 		const foundLetters = new Set();
 		for (let letter of text.toUpperCase()) {
 			this.alphabet.has(letter) && foundLetters.add(letter);
@@ -96,10 +120,9 @@ class Pangrammatron {
 	}
 
 	howPanphonic(text) {
-		if (!this.inventory || this.inventory.size < 1) return;
+		if (!this.inventory) throw "No inventory defined before calling Pangrammatron.howPanphonic";
 		
 		const words = text.toUpperCase().match(/[A-Z]+/g);
-
 		return new Promise((resolve, reject) => {
 			fs.readFile(`../${this.files.en.lex}`,
 				(error, data) => {
@@ -114,21 +137,6 @@ class Pangrammatron {
 				}
 			);
 		});
-
-		// with open(self.phones_lexicon, "r") as f:
-		// 	for l in f:
-		// 		try:
-		// 			l_elems = l.split()
-		// 			l_word = l_elems[0]
-		// 			l_phones = l_elems[1:]
-		// 		except:
-		// 			# line is not a formatted lexicon entry
-		// 			continue
-		// 		if l_word in words:
-		// 			# strip numbers from end of some phones
-		// 			for phone in l_phones:
-		// 				phoneme = "".join([c for c in phone if not c.isdigit()])
-		// 				found_unique_phones.add(phoneme)
 	}
 	
 	isPangram(text) {
