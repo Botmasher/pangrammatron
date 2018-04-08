@@ -59,10 +59,10 @@ class CMUPhonesDictionary {
 
 class Pangrammatron {
 	constructor(alphabet=[], inventory=[], dictionary={}, language='en') {
-		this.language = this.setLanguage(language);
-		this.alphabet = this.setAlphabet(alphabet);
-		this.inventory = inventory;
-		this.dictionary = dictionary;
+		this.setLanguage(language);
+		this.setAlphabet(alphabet);
+		this.setInventory(inventory);
+		this.setDictionary(dictionary);
 		this.memo = {
 			phones: {},
 			grams: {}
@@ -71,11 +71,11 @@ class Pangrammatron {
 	
 	setAlphabet(alphabet) {
 		// store character set from array or string
-		this.alphabet = new Set();
+		alphabet = new Set();
 		for (let i=0; i < alphabet.length; i++) {
-			this.alphabet.add(alphabet[i]);
+			alphabet.add(alphabet[i]);
 		}
-		return this.inventory;
+		this.alphabet = alphabet;
 	}
 
 	getAlphabet() {
@@ -98,12 +98,8 @@ class Pangrammatron {
 		return this.inventory.size;
 	}
 
-	setInventory(inventory) {
-		this.inventory = new Set();
-		for (let i=0; i < inventory.length; i++) {
-			this.inventory.add(alphabet[i]);
-		}
-		return this.inventory;
+	setInventory(inventory=new Set()) {
+		this.inventory = inventory;
 	}
 	
 	setDictionary(dictionary) {
@@ -143,7 +139,6 @@ class Pangrammatron {
 		if (!this.alphabet) throw "No alphabet defined before calling Pangrammatron.howPangrammatic"
 
 		const words = text.toUpperCase().match(/([A-Z](\'[A-Z]+)?)+/g); 	
-		console.log(words);
 		const cleanedText = words.join();
 
 		if (this.memo.grams.cleanedText) return this.memo.grams.cleanedText.size;
@@ -161,17 +156,20 @@ class Pangrammatron {
 		
 		// split and scrub text
 		const words = text.toUpperCase().match(/([A-Z](\'[A-Z]+)?)+/g); 	
-		console.log(words);
 		const cleanedText = words.join();
 
 		if (this.memo.phones.cleanedText) return (this.memo.phones.cleanedText);
 
 		const phones = new Set();
 
+		let formatted_phones = [];
+
 		for (let word of words) {
 			if (!this.dictionary[word]) continue;
+			console.log(this.dictionary[word]);
 			for (let sound of this.dictionary[word]) {
-				phones.add(sound);
+				formatted_phones = sound.match(/[^\d]+/g);
+				phones.add(formatted_phones[0]);
 			}
 		}
 
@@ -188,14 +186,17 @@ class Pangrammatron {
 
 	isPanphone(text) {
 		if (!this.inventory || this.inventory.size < 1) return;
-		const phonesPromise = this.howPanphonic(text);
-		return phonesPromise.then(phoneCount => (phoneCount >= this.inventory.size));
+		const phones = this.howPanphonic(text);
+		//console.log(phones);
+		//console.log(this.inventory);
+		return (phones.size >= this.inventory.size);
 	}
 }
 
 pan = new Pangrammatron();
 const sent0 = "The quick brown fox jumped over the lazy dog.";
-const sent1 = "The quick brown fox jumped over the lazy dog's.";
+const sent1 = "The quick brown fox jumped over the lazy dogs.";
+const sent2 = "Hear in this short limerick’s strains every sound which my language contains. / Could it be an illusion? / Panphonic profusion? / Something linguists enjoy as a game?.";
 pan.setAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
 cmu = new CMUPhonesDictionary();
 cmu.gatherPhones().then((inventory) => cmu.gatherEntries().then((entries) => {
@@ -203,4 +204,5 @@ cmu.gatherPhones().then((inventory) => cmu.gatherEntries().then((entries) => {
 	pan.setDictionary(entries);
 	console.log(pan.isPanphone(sent0));
 	console.log(pan.isPanphone(sent1));
+	console.log(pan.isPanphone(sent2));
 }));
