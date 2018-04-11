@@ -2,7 +2,7 @@
 //require('es6-promise').polyfill();
 const fs = require('fs');
 
-// TODO break out text parser to access phones data through dedicated JS object
+// TODO store entries with multiple pronunciations (formatted in text with suffix '(n)')
 
 class CMUPhonesDictionary {
 	constructor() {
@@ -39,7 +39,6 @@ class CMUPhonesDictionary {
 					let word = '';
 					let sounds = [];
 					// search lines for formatted entries
-					console.log(['Zinda','Z','IH','N','D','AH'][1].match(/[A-Z]([A-Z]?)/g));
 					for (let line of data.toString('utf-8').match(/[^\n]+/g)) {
 						const l_elems = line.match(/[^ \t]+/g);
 						if (l_elems[0].match(/[\#\;\{\}]/g)) continue;
@@ -52,7 +51,6 @@ class CMUPhonesDictionary {
 						// find and store real entries as 'word': [phone_0, ..., phone_n]
 						if (sounds && sounds.length > 0 && this.phones.has(sounds[0])) {
 							word = l_elems[0].match(/[A-Z]+/g)[0];
-							word === "IN" && console.log(sounds);
 							this.entries[word] = sounds;
 						}
 					}
@@ -140,7 +138,6 @@ class Pangrammatron {
 		const phones = new Set();
 		// for (let word of words) {
 		// 	this.phonesLex.word && this.phonesLex.word.length > 0 && this.phonesLex.word.map(phone => phones.add(phone));
-		// 	}
 		// }
 		return phones;
 	}
@@ -165,7 +162,7 @@ class Pangrammatron {
 		if (!this.inventory) throw "No inventory defined before calling Pangrammatron.howPanphonic";
 		
 		// split and scrub text
-		const words = text.toUpperCase().match(/([A-Z]+(\'[A-Z]+)?)/g); 	
+		const words = text.toUpperCase().match(/([A-Z]+(\'[A-Z]+)?)/g);	
 		const cleanedText = words.join();
 
 		console.log(cleanedText);
@@ -175,11 +172,20 @@ class Pangrammatron {
 		const phones = new Set();
 
 		let formatted_phones = [];
+		let formatted_word = '';
 
 		for (let word of words) {
-			if (!this.dictionary[word]) continue;
-			for (let sound of this.dictionary[word]) {
-				console.log(sound);
+			if (!this.dictionary[word]) {
+				if (word.includes('\'') && this.dictionary[word.match(/[A-Z]+/g)[0]]) {
+					formatted_word = word.match(/[A-Z]+/g)[0];
+					if (!this.dictionary[formatted_word]) continue;
+				} else {
+					continue;
+				}
+			} else {
+				formatted_word = word;
+			}
+			for (let sound of this.dictionary[formatted_word]) {
 				formatted_phones = sound.match(/[^\d]+/g);
 				phones.add(formatted_phones[0]);
 			}
@@ -199,7 +205,10 @@ class Pangrammatron {
 	isPanphone(text) {
 		if (!this.inventory || this.inventory.size < 1) return;
 		const phones = this.howPanphonic(text);
-		console.log(phones);
+		// check for missing phones
+		// for (let ph of this.inventory) {
+		// 	!phones.has(ph) && console.log(ph);
+		// }
 		return (phones.size >= this.inventory.size);
 	}
 }
@@ -207,13 +216,12 @@ class Pangrammatron {
 pan = new Pangrammatron();
 const sent0 = "The quick brown fox jumped over the lazy dog.";
 const sent1 = "The quick brown fox jumped over the lazy dogs.";
-const sent2 = "Hear in this short cat limerick strains every sound which my language contains. / Could it be an illusion? / Pan phonic profusion? / Something linguists enjoy as a game?";
+const sent2 = "Hear in this short limerick's strains every sound which my language contains. / Could it be an illusion? / Pan phonic pro fusion? / Something linguists enjoy as a game?";
 pan.setAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
 cmu = new CMUPhonesDictionary();
 cmu.gatherPhones().then((inventory) => cmu.gatherEntries().then((entries) => {
 	pan.setInventory(inventory);
 	pan.setDictionary(entries);
 	console.log(pan.isPanphone(sent0));
-	console.log(pan.isPanphone(sent1));
 	console.log(pan.isPanphone(sent2));
 }));
