@@ -76,14 +76,21 @@ class Pangrammatron {
 			grams: {}
 		};
 	}
+
+	initialize(phonesAPI) {
+		return phonesAPI.gatherPhones().then((inventory) => cmu.gatherEntries().then((entries) => {
+			pan.setInventory(inventory);
+			pan.setDictionary(entries);
+		}));
+	}
 	
 	setAlphabet(alphabet) {
 		// store character set from array or string
-		alphabet = new Set();
+		const new_alphabet = new Set();
 		for (let i=0; i < alphabet.length; i++) {
-			alphabet.add(alphabet[i]);
+			new_alphabet.add(alphabet[i]);
 		}
-		this.alphabet = alphabet;
+		this.alphabet = new_alphabet;
 	}
 
 	getAlphabet() {
@@ -165,8 +172,6 @@ class Pangrammatron {
 		const words = text.toUpperCase().match(/([A-Z]+(\'[A-Z]+)?)/g);	
 		const cleanedText = words.join();
 
-		console.log(cleanedText);
-
 		if (this.memo.phones.cleanedText) return (this.memo.phones.cleanedText);
 
 		const phones = new Set();
@@ -219,9 +224,8 @@ const sent1 = "The quick brown fox jumped over the lazy dogs.";
 const sent2 = "Hear in this short limerick's strains every sound which my language contains. / Could it be an illusion? / Pan phonic pro fusion? / Something linguists enjoy as a game?";
 pan.setAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
 cmu = new CMUPhonesDictionary();
-cmu.gatherPhones().then((inventory) => cmu.gatherEntries().then((entries) => {
-	pan.setInventory(inventory);
-	pan.setDictionary(entries);
+pan.initialize(cmu).then(() => {
 	console.log(pan.isPanphone(sent0));
+	console.log(pan.isPangram(sent0));
 	console.log(pan.isPanphone(sent2));
-}));
+});
