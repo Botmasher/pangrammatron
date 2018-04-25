@@ -1,68 +1,3 @@
-//require('isomorphic-fetch');
-//require('es6-promise').polyfill();
-const fs = require('fs');
-
-// TODO store entries with multiple pronunciations (formatted in text with suffix '(n)')
-
-class CMUPhonesDictionary {
-	constructor() {
-		this.paths = {
-			en: {
-				lex: 'dictionaries/en/cmudict-0.7b.txt',
-				phon: 'dictionaries/en/cmudict-0.7b.phones'
-			}
-		};
-		this.phones = {};
-		this.entries = {};
-	}
-
-	gatherPhones(cb) {
-		return new Promise((resolve, reject) => {
-			fs.readFile(`../${this.paths.en.phon}`,
-				(error, data) => {
-					const phones = new Set();
-					for (let line of data.toString('utf-8').match(/[^\n]+/g)) {
-						phones.add(line.split('\t')[0]);
-					}
-					this.phones = phones;
-					resolve(this.phones);
-				}
-			);
-		});
-	}
-
-	gatherEntries() {
-		return new Promise((resolve, reject) => {
-			fs.readFile(`../${this.paths.en.lex}`,
-				(error, data) => {
-					const phones = new Set();
-					let word = '';
-					let sounds = [];
-					// search lines for formatted entries
-					for (let line of data.toString('utf-8').match(/[^\n]+/g)) {
-						const l_elems = line.match(/[^ \t]+/g);
-						if (l_elems[0].match(/[\#\;\{\}]/g)) continue;
-						sounds = l_elems && l_elems.length > 1 && l_elems[1].match(/[A-Z]([A-Z]?)/g)
-							? l_elems.slice(1).map(phone => (
-									phone.match(/[A-Z]([A-Z])?/g)[0]		// strip phones of trailing numbers
-								))
-							: []
-						;
-						// find and store real entries as 'word': [phone_0, ..., phone_n]
-						if (sounds && sounds.length > 0 && this.phones.has(sounds[0])) {
-							word = l_elems[0].match(/[A-Z]+/g)[0];
-							this.entries[word] = sounds;
-						}
-					}
-					resolve(this.entries);
-				}
-			);
-		});
-	}
-}
-
-// TODO redo path (the relative one breaks when run from any other dir e.g. node js/p~.js from ../)
-
 // TODO raise error when panphonic dictionary searched using unknown word (including "PANPHONIC")
 
 class Pangrammatron {
@@ -77,10 +12,10 @@ class Pangrammatron {
 		};
 	}
 
-	initialize(phonesAPI) {
-		return phonesAPI.gatherPhones().then((inventory) => cmu.gatherEntries().then((entries) => {
-			pan.setInventory(inventory);
-			pan.setDictionary(entries);
+	initialize(gatherPhones, gatherEntries) {
+		return gatherPhones().then((inventory) => gatherEntries().then((entries) => {
+			this.setInventory(inventory);
+			this.setDictionary(entries);
 		}));
 	}
 	
@@ -218,14 +153,6 @@ class Pangrammatron {
 	}
 }
 
-pan = new Pangrammatron();
-const sent0 = "The quick brown fox jumped over the lazy dog.";
-const sent1 = "The quick brown fox jumped over the lazy dogs.";
-const sent2 = "Hear in this short limerick's strains every sound which my language contains. / Could it be an illusion? / Pan phonic pro fusion? / Something linguists enjoy as a game?";
-pan.setAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-cmu = new CMUPhonesDictionary();
-pan.initialize(cmu).then(() => {
-	console.log(pan.isPanphone(sent0));
-	console.log(pan.isPangram(sent0));
-	console.log(pan.isPanphone(sent2));
-});
+module.exports = {
+	Pangrammatron
+};
