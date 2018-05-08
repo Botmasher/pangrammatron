@@ -18,7 +18,15 @@ class Pangrammatron {
 			this.setDictionary(entries);
 		}));
 	}
-	
+
+	isInitialized() {
+		return (this.inventory && this.dictionary);
+	}
+
+	isConfigured() {
+		return (this.inventory && this.dictionary && this.language && this.alphabet);
+	}
+
 	setAlphabet(alphabet) {
 		// store character set from array or string
 		const new_alphabet = new Set();
@@ -51,7 +59,7 @@ class Pangrammatron {
 	setInventory(inventory=new Set()) {
 		this.inventory = inventory;
 	}
-	
+
 	setDictionary(dictionary) {
 		this.dictionary = dictionary;
 	}
@@ -60,7 +68,7 @@ class Pangrammatron {
 		if (language.length !== 2) return false;
 		this.language = language;
 	}
-	
+
 	breakIntoWords(text) {
 		const words = text.toUpperCase().match(/([A-Z](\'[A-Z]+)?)+/g);
 		const splitText = text.trim().split(" ");
@@ -87,7 +95,7 @@ class Pangrammatron {
 	howPangrammatic(text) {
 		if (!this.alphabet) throw "No alphabet defined before calling Pangrammatron.howPangrammatic"
 
-		const words = text.toUpperCase().match(/([A-Z](\'[A-Z]+)?)+/g); 	
+		const words = text.toUpperCase().match(/([A-Z](\'[A-Z]+)?)+/g);
 		const cleanedText = words.join();
 
 		if (this.memo.grams.cleanedText) return this.memo.grams.cleanedText.size;
@@ -102,9 +110,9 @@ class Pangrammatron {
 
 	howPanphonic(text) {
 		if (!this.inventory) throw "No inventory defined before calling Pangrammatron.howPanphonic";
-		
+
 		// split and scrub text
-		const words = text.toUpperCase().match(/([A-Z]+(\'[A-Z]+)?)/g);	
+		const words = text.toUpperCase().match(/([A-Z]+(\'[A-Z]+)?)/g);
 		const cleanedText = words.join();
 
 		if (this.memo.phones.cleanedText) return (this.memo.phones.cleanedText);
@@ -136,7 +144,7 @@ class Pangrammatron {
 
 		return (phones);
 	}
-	
+
 	isPangram(text) {
 		const letterCount = this.howPangrammatic(text);
 		return (letterCount >= this.alphabet.size);

@@ -1,12 +1,14 @@
 import re
 import os
 
+# TODO split phones dictionary from pangram/panphone calculation
+
 ## pangram checker
 class Pangrammatron:
 	files = {
 		'en': {
-			'lex': 'dictionaries/en/cmudict-0.7b.txt',
-			'phones': 'dictionaries/en/cmudict-0.7b.phones'
+			'lex': '../dictionaries/en/cmudict-0.7b.txt',
+			'phones': '../dictionaries/en/cmudict-0.7b.phones'
 		}
 	}
 	memo_phones = {}
