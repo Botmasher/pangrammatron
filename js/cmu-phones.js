@@ -24,6 +24,7 @@ class PhonesDictionary {
 						phones.add(line.split('\t')[0]);
 					}
 					this.phones = phones;
+					console.log(JSON.stringify(this.phones));
 					resolve(this.phones);
 				}
 			);
@@ -53,6 +54,7 @@ class PhonesDictionary {
 							this.entries[word] = sounds;
 						}
 					}
+					console.log(JSON.stringify(this.entries));
 					resolve(this.entries);
 				}
 			);
